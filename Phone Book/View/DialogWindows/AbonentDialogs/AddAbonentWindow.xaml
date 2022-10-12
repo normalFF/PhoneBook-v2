@@ -1,0 +1,167 @@
+﻿<Window x:Class="Phone_Book.View.DialogWindows.AbonentDialogs.AddAbonentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converter="clr-namespace:Phone_Book.Infrastructure.Converters"
+        xmlns:local="clr-namespace:Phone_Book.Infrastructure.WindowClose"
+        DataContext="{Binding CreateAbonentModel, Source={StaticResource Locator}}"
+        mc:Ignorable="d"
+        Title="Добавление абонента" Height="550" Width="1000" local:WindowCloser.EnableWindowClosing="True">
+
+    <Window.Resources>
+        <converter:IEnumerableFilterConverter x:Key="AbonentConverter"/>
+        <converter:IEnumerableGroupConverter x:Key="GroupConverter"/>
+        <converter:PhoneNumberConverter x:Key="NumberConverter"/>
+        <converter:EnumerableToListConverter x:Key="AbonentToList"/>
+    </Window.Resources>
+
+    <DockPanel Margin="5">
+        <DockPanel DockPanel.Dock="Bottom">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Content="Сохранить" Height="30" Margin="0 4 2 0" Command="{Binding AddAbonentInPhoneBook}"/>
+                <Button Content="Отмена" Grid.Column="1" Margin="2 4 0 0" Command="{Binding CloseWindow}"/>
+            </Grid>
+        </DockPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Margin="0 0 3 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="0 0 2 0">
+                    <Label Content="Имя"/>
+                    <TextBox Height="24" Padding="2" Text="{Binding Name}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="2 0 0 0">
+                    <Label Content="Фамилия"/>
+                    <TextBox Height="24" Padding="2" Text="{Binding Surname}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Margin="0 0 2 0">
+                    <Label Content="Дата рождения"/>
+                    <DatePicker Grid.Row="1" SelectedDate="{Binding DateOfBirth}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="2 0 0 0">
+                    <Label Content="Место проживания"/>
+                    <TextBox Height="24" Padding="2" Text="{Binding Residence}"/>
+                </StackPanel>
+                <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Номера телефонов"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid SelectedItem="{Binding SelectPhone, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Phones}" IsReadOnly="True" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Type}"/>
+                                <DataGridTextColumn Header="Телефон" Width="*" Binding="{Binding Number}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Grid.Column="1" Margin="4 0 0 0">
+                            <Button Content="Удалить" Height="25"  Command="{Binding DeletePhoneCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="2" Margin="0 4 0 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="6*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Номер"/>
+                        <Label Content="Тип" Grid.Row="1"/>
+                        <Label Content="Свой тип" Grid.Row="2"/>
+                        <TextBox Height="24" Padding="2" Grid.Column="1" Text="{Binding InputNewPhone}"/>
+                        <ComboBox Height="24" Grid.Row="1" Grid.Column="1" Margin="0 4 0 0" ItemsSource="{Binding PhoneTypeCollection, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectType}"/>
+                        <TextBox Height="24" Padding="2" Grid.Row="2" Grid.Column="1" Margin="0 4 0 0" Text="{Binding InputNewType}"/>
+                        <Button Content="Добавить" Grid.Column="2" Margin="4 0 0 0" Command="{Binding AddPhoneCommand}"/>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="3" Grid.ColumnSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.ColumnSpan="3" Content="Список групп"/>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Группы абонента"/>
+                        <ListBox Grid.Row="1" ItemsSource="{Binding SelectedGroups}" SelectedItem="{Binding SelectAbonentGroup}"/>
+                    </Grid>
+                    <Grid Grid.Row="1" Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Группы абонента"/>
+                        <ListBox Grid.Row="1" SelectedItem="{Binding SelectPhoneBookGroup}">
+                            <ItemsControl.ItemsSource>
+                                <MultiBinding Converter="{StaticResource AbonentConverter}">
+                                    <Binding Path="PhoneBookGroups" UpdateSourceTrigger="PropertyChanged"/>
+                                    <Binding Path="SelectedGroups"/>
+                                </MultiBinding>
+                            </ItemsControl.ItemsSource>
+                        </ListBox>
+                    </Grid>
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="1" Margin="4 0 4 0">
+                            <Button Content="{Binding Source={StaticResource IconArrowLeft}}" Width="50" Margin="0 0 0 4" Command="{Binding AddGroupCommand}"/>
+                            <Button Content="{Binding Source={StaticResource IconArrowRight}}" Command="{Binding DeleteGroupCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <DockPanel Grid.Column="1">
+                <DockPanel DockPanel.Dock="Bottom">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="Добавить фото" Height="30" Margin="0 4 2 0"/>
+                        <Button Content="Удалить фото" Grid.Column="1" Margin="2 4 0 0"/>
+                    </Grid>
+                </DockPanel>
+                <Image/>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>

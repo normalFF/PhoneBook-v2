@@ -1,0 +1,131 @@
+﻿<Window x:Class="Phone_Book.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Phone_Book.Infrastructure.WindowClose"
+        xmlns:converter="clr-namespace:Phone_Book.Infrastructure.Converters"
+        mc:Ignorable="d"
+        DataContext="{Binding MainModel, Source={StaticResource Locator}}"
+        Title="Телефонная книга" MinHeight="600" Width="1300" local:WindowCloser.EnableWindowClosing="True">
+
+    <Window.Resources>
+        <converter:IEnumerableFilterConverter x:Key="AbonentConverter"/>
+        <converter:IEnumerableGroupConverter x:Key="GroupConverter"/>
+        <converter:PhoneNumberConverter x:Key="NumberConverter"/>
+        <converter:EnumerableToListConverter x:Key="AbonentToList"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0" IsMainMenu="True" Background="White" BorderThickness="0 0 0 1" BorderBrush="#AAA">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Создать"/>
+                <MenuItem Header="Открыть" Command="{Binding LoadFileCommand}"/>
+                <MenuItem Header="Сохранить"/>
+                <MenuItem Header="Сохранить как..."/>
+            </MenuItem>
+            <MenuItem Header="Добавить Абонента" Command="{Binding OpenAddAbonentDialog}"/>
+            <MenuItem Header="Добавить Группу" Command="{Binding OpenAddGroupDialog}"/>
+        </Menu>
+
+        <TabControl Grid.Row="1">
+            <TabItem Header="Список Абонентов">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top">
+                        <Label Content="{StaticResource SearchIcon}"/>
+                        <TextBox FontSize="16"/>
+                    </DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Header="Список абонентов">
+                            <DataGrid Margin="0 5 5 0" SelectedItem="{Binding SelectAbonent}" ItemsSource="{Binding Abonents, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource AbonentToList}}" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True">
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Просмотр данных" Command="{Binding OpenAbonentInfoDialog}"/>
+                                        <MenuItem Header="Редактирование данных" Command="{Binding OpenEditAbonentDialog}"/>
+                                        <MenuItem Header="Копирование данных"/>
+                                        <MenuItem Header="Удаление Абонента"/>
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Имя" Binding="{Binding Name, TargetNullValue=Отсутствует}" Width="*"/>
+                                    <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname, TargetNullValue=Отсутствует}" Width="*"/>
+                                    <DataGridTextColumn Header="Дата рождения" Binding="{Binding DateOfBirth, TargetNullValue=Отсутствует, StringFormat=dd.mm.yyyy}" Width="*"/>
+                                    <DataGridTextColumn Header="Место положения" Binding="{Binding Residence, TargetNullValue=Отсутствует}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+
+                        <GroupBox Grid.Column="1" Header="Номера абонента">
+                            <DataGrid Margin="0 5 5 0" ItemsSource="{Binding SelectAbonent.Phones}" SelectedItem="" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Тип"  Width="*" Binding="{Binding Type}"/>
+                                    <DataGridTextColumn Header="Номер" Width="*" Binding="{Binding Number}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+
+                    </Grid>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Список Групп">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <GroupBox Header="Список групп">
+                        <DockPanel Grid.Column="0">
+                            <DockPanel DockPanel.Dock="Top">
+                                <Label Margin="0 4 0 4" Content="{StaticResource SearchIcon}"/>
+                                <TextBox FontSize="16" Margin="0 4 0 4"/>
+                            </DockPanel>
+                            <ListBox ItemsSource="{Binding Groups, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DockPanel>
+                    </GroupBox>
+
+                    <GroupBox Grid.Column="1" Header="Список абонетов группы">
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top">
+                                <Label Content="{StaticResource SearchIcon}"/>
+                                <TextBox FontSize="16"/>
+                            </DockPanel>
+                            <DataGrid Margin="0 5 0 0" AutoGenerateColumns="False" IsReadOnly="True" >
+                                <DataGrid.ItemsSource>
+                                    <MultiBinding Converter="{StaticResource AbonentConverter}">
+                                        <Binding Path="Abonents"/>
+                                        <Binding Path="SelectGroup"/>
+                                    </MultiBinding>
+                                </DataGrid.ItemsSource>
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Просмотр данных"/>
+                                        <MenuItem Header="Редактирование данных"/>
+                                        <MenuItem Header="Копирование данных"/>
+                                        <MenuItem Header="Удаление Абонента"/>
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="*"/>
+                                    <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}" Width="*"/>
+                                    <DataGridTextColumn Header="Дата рождения" Binding="{Binding DateOfBirth, StringFormat=dd.mm.yyyy}" Width="*"/>
+                                    <DataGridTextColumn Header="Место положения" Binding="{Binding Residence, TargetNullValue=Отсутствует}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
