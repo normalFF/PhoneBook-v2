@@ -90,12 +90,18 @@ namespace Phone_Book.Models
 		public AbonentModel SelectAbonent
 		{
 			get => selectAbonent;
-			set => Set(ref selectAbonent, value);
+			set
+			{
+				if (Set(ref selectAbonent, value)) GlobalSelectAbonent = value;
+			}
 		}
 		public AbonentModel SelectAbonentInGroup
 		{
 			get => selectAbonentInGroup;
-			set => Set(ref selectAbonentInGroup, value);
+			set
+			{
+				if (Set(ref selectAbonentInGroup, value)) GlobalSelectAbonent = value;
+			}
 		}
 		public IEnumerable<string> Groups
 		{
@@ -125,8 +131,8 @@ namespace Phone_Book.Models
 		{
 			OpenAddAbonentDialog = new CommandBase(OnOpenAddAbonentDialog, (obj) => true);
 			OpenAddGroupDialog = new CommandBase(OnOpenAddGroupDialog, (obj) => true);
-			OpenEditAbonentDialog = new CommandBase(OnOpenEditAbonentDialog, (SelectAbonent) => SelectAbonent != null);
-			OpenAbonentInfoDialog = new CommandBase(OnOpenAbonentInfoDialog, (SelectAbonent) => SelectAbonent != null);
+			OpenEditAbonentDialog = new CommandBase(OnOpenEditAbonentDialog, (obj) => SelectAbonent != null);
+			OpenAbonentInfoDialog = new CommandBase(OnOpenAbonentInfoDialog, (obj) => GlobalSelectAbonent != null);
 			LoadFileCommand = new CommandBase(OnLoadFile, (obj) => true);
 		}
 
@@ -134,7 +140,8 @@ namespace Phone_Book.Models
 		{
 			bool result = false;
 			dialogService.ShowDialog(EnumDialogsWindowsFromAbonent.AddAbonent, (value) => result = value);
-			OnPropertyChanged(nameof(Abonents));
+			Abonents = phoneBook.GetAbonents();
+			Groups = phoneBook.GetGroupsName();
 		}
 
 		private void OnOpenAddGroupDialog(object obj)
@@ -201,6 +208,8 @@ namespace Phone_Book.Models
 					dialogService.ShowMessageException(ex.InnerException == null ? ex.Message : ex.InnerException.Message, "Ошибка при открытии файла");
 				}
 			}
+			Abonents = phoneBook.GetAbonents();
+			Groups = phoneBook.GetGroupsName();
 		}
 	}
 }
