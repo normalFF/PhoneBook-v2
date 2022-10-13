@@ -8,6 +8,9 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using Phone_Book.Infrastructure.DialogService;
 using Phone_Book.Infrastructure.WindowClose;
+using System.Windows.Controls;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace Phone_Book.Models
 {
@@ -60,6 +63,8 @@ namespace Phone_Book.Models
 		private string inputNewPhone;
 		private string inputNewType;
 		private string selectType;
+		private string abonentImageBase64;
+		private Image abonentImage;
 
 		public string Name
 		{
@@ -144,6 +149,12 @@ namespace Phone_Book.Models
 			get => selectPhone;
 			set => Set(ref selectPhone, value);
 		}
+		public Image AbonentImage
+		{
+			get => abonentImage;
+			set => Set(ref abonentImage, value);
+		}
+
 
 		public ICommand AddAbonentInPhoneBook { get; private set; }
 		public ICommand CloseWindow { get; private set; }
@@ -151,6 +162,8 @@ namespace Phone_Book.Models
 		public ICommand DeletePhoneCommand { get; private set; }
 		public ICommand AddGroupCommand { get; private set; }
 		public ICommand DeleteGroupCommand { get; private set; }
+		public ICommand AddImageCommand { get; private set; }
+		public ICommand DeleteImageCommand { get; private set; }
 
 		public CreateAbonent(IPhoneBook phoneBook, IDialog dialogWindows)
 		{
@@ -168,10 +181,12 @@ namespace Phone_Book.Models
 		{
 			DeleteGroupCommand = new CommandBase(OnDeleteGroup, (obj) => !string.IsNullOrEmpty(SelectAbonentGroup) && SelectedGroups.Contains(SelectAbonentGroup));
 			DeletePhoneCommand = new CommandBase(OnDeletePhone, (obj) => Phones.Contains(SelectPhone));
-			AddGroupCommand = new CommandBase(OnAddGroup, (obj) => !SelectedGroups.Contains(SelectPhoneBookGroup));
-			AddPhoneCommand = new CommandBase(OnAddPhone, (obj) => (SelectType != null || !string.IsNullOrEmpty(InputNewType)) && !string.IsNullOrEmpty(InputNewPhone));
+			AddGroupCommand = new CommandBase(OnAddGroup, (obj) => !string.IsNullOrEmpty(SelectPhoneBookGroup) && !SelectedGroups.Contains(SelectPhoneBookGroup));
+			AddPhoneCommand = new CommandBase(OnAddPhone, (obj) => (!string.IsNullOrEmpty(SelectType) || !string.IsNullOrEmpty(InputNewType)) && !string.IsNullOrEmpty(InputNewPhone));
 			AddAbonentInPhoneBook = new CommandBase(OnAddAbonentInPhoneBook, (obj) => !string.IsNullOrEmpty(Name) && Phones.Count != 0);
 			CloseWindow = new CommandBase(OnCloseWindow, (obj) => true);
+			AddImageCommand = new CommandBase(OnAddImage, (obj) => true);
+			DeleteImageCommand = new CommandBase(OnDeleteImage, (obj) => !string.IsNullOrEmpty(abonentImageBase64));
 		}
 
 		private void OnDeleteGroup(object obj)
@@ -197,11 +212,24 @@ namespace Phone_Book.Models
 		private void OnAddPhone(object obj)
 		{
 			var newPhone = new PhoneNumberModel() { Type = string.IsNullOrEmpty(InputNewType) ? SelectType : InputNewType, Number = InputNewPhone };
+			try
+			{
+				phoneBook.ValidatePhoneNumber(newPhone);
+			}
+			catch (Exception ex)
+			{
+				dialogs.ShowMessageException(ex.InnerException is null ? ex.Message : ex.InnerException.Message, "Ошибка валидации");
+				return;
+			}
 			if (!Phones.Contains(newPhone))
 			{
 				Phones.Add(newPhone);
 				InputNewType = string.Empty;
 				InputNewPhone = string.Empty;
+			}
+			else
+			{
+				dialogs.ShowMessageInfo("Телефон с данным номером уже есть в списке", "Внимание");
 			}
 		}
 
@@ -220,7 +248,8 @@ namespace Phone_Book.Models
 				DateOfBirth = dateOfBirth,
 				Residence = residence,
 				Phones = Phones.ToArray(),
-				Groups = Groups.ToArray()
+				Groups = SelectedGroups.ToArray(),
+				ImageBase64 = abonentImageBase64
 			};
 			Close.Invoke();
 		}
@@ -237,6 +266,30 @@ namespace Phone_Book.Models
 				return false;
 			}
 			return true;
+		}
+
+		private void OnAddImage(object obj)
+		{
+			var result = dialogs.OpenImageFile();
+			if (!string.IsNullOrEmpty(result))
+			{
+				var imageArray = File.ReadAllBytes(result);
+				abonentImageBase64 = Convert.ToBase64String(imageArray);
+				BitmapImage bi = new BitmapImage();
+				bi.BeginInit();
+				bi.StreamSource = new MemoryStream(imageArray);
+				bi.EndInit();
+
+				Image nImage = new Image();
+				nImage.Source = bi;
+				AbonentImage = nImage;
+			}
+		}
+
+		private void OnDeleteImage(object obj)
+		{
+			abonentImageBase64 = string.Empty;
+			AbonentImage = null;
 		}
 	}
 }
