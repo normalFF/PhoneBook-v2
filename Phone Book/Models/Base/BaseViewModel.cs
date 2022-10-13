@@ -1,6 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using PhoneLibrary;
 
 namespace Phone_Book.Models.Base
 {
@@ -20,5 +20,7 @@ namespace Phone_Book.Models.Base
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(parameter));
 		}
+
+		public static AbonentModel GlobalSelectAbonent { get; set; }
 	}
 }
