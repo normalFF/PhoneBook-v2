@@ -21,6 +21,8 @@ namespace PhoneLibrary
 
 		public string Residence { get; set; }
 
+		public string ImageBase64 { get; set; }
+
 		[Required(ErrorMessage = "Список телефонов не может быть пустым")]
 		[MinLength(1, ErrorMessage = "Минимальное количество телефонов 1")]
 		public PhoneNumberModel[] Phones { get; set; }

@@ -62,6 +62,7 @@ namespace PhoneLibrary
 				DateOfBirth = DateOfBirth,
 				Residence = Residence,
 				Groups = (string[])_groups.ToArray().Clone(),
+				ImageBase64 = this.ImageBase64,
 				Phones = _phoneNumbers.Select(item => item.GetModel()).ToArray(),
 				Id = Id
 			};
@@ -82,6 +83,7 @@ namespace PhoneLibrary
 			Surname = model.Surname;
 			DateOfBirth = model.DateOfBirth;
 			Residence = model.Residence;
+			ImageBase64 = model.ImageBase64;
 			_groups = model.Groups == null ? new List<string>() : ((string[])model.Groups.Clone()).ToList();
 			_phoneNumbers = model.Phones.Select(item => new PhoneNumber(item)).ToList();
 		}
