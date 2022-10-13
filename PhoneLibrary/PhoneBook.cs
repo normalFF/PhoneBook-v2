@@ -34,6 +34,8 @@ namespace PhoneLibrary
 			abonentModel.Id = _generate.GetId();
 			Abonent abonent = new Abonent(abonentModel);
 			_abonentsList.Add(abonent);
+			var newTypes = abonentModel.Phones.Where(i => !_phoneType.Contains(i.Type)).Select(i => i.Type).ToArray();
+			if (newTypes.Length != 0) _phoneType.AddRange(newTypes);
 			_isSaved = false;
 		}
 
@@ -122,7 +124,7 @@ namespace PhoneLibrary
 			_isSaved = true;
 		}
 
-		public async void Load(string filePath)
+		public void Load(string filePath)
 		{
 			if (File.Exists(filePath))
 			{
@@ -131,13 +133,14 @@ namespace PhoneLibrary
 				using (FileStream streamRead = File.OpenRead(filePath))
 				{
 					byte[] bytes = new byte[streamRead.Length];
-					await streamRead.ReadAsync(bytes, 0, bytes.Length);
+					streamRead.Read(bytes, 0, bytes.Length);
 					serializedString = Encoding.UTF8.GetString(bytes);
 				}
 
 				IEnumerable<AbonentModel> resultDeserialize = JsonSerializer.Deserialize<IEnumerable<AbonentModel>>(serializedString);
 				if (resultDeserialize is null) throw new SerializationException();
 
+				Clear();
 				try
 				{
 					foreach (AbonentModel item in resultDeserialize)
@@ -175,6 +178,11 @@ namespace PhoneLibrary
 			_group.AddRange(_baseGroups);
 			_phoneType.Clear();
 			_phoneType.AddRange(_basePhoneTypse);
+		}
+
+		public void ValidatePhoneNumber(PhoneNumberModel phoneModel)
+		{
+			PhoneNumber.ValidatePhoneModel(phoneModel);
 		}
 	}
 }
