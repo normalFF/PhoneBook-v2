@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
+        DataContext="{Binding BrowseAbonentModel, Source={StaticResource Locator}}"
         Title="AbonentInfo" Height="450" Width="800" ResizeMode="NoResize">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
@@ -22,19 +23,19 @@
             </Grid.RowDefinitions>
             <StackPanel>
                 <Label Content="Имя"/>
-                <TextBox IsReadOnly="True"/>
+                <TextBox IsReadOnly="True" Text="{Binding Name}"/>
             </StackPanel>
             <StackPanel Grid.Row="1">
                 <Label Content="Фамилия"/>
-                <TextBox IsReadOnly="True"/>
+                <TextBox IsReadOnly="True" Text="{Binding Surname}"/>
             </StackPanel>
             <StackPanel Grid.Row="2">
                 <Label Content="Дата рождения"/>
-                <TextBox IsReadOnly="True"/>
+                <TextBox IsReadOnly="True" Text="{Binding DateOfBirth}"/>
             </StackPanel>
             <StackPanel Grid.Row="3">
                 <Label Content="Место проживания"/>
-                <TextBox IsReadOnly="True"/>
+                <TextBox IsReadOnly="True" Text="{Binding Residence}"/>
             </StackPanel>
             <Grid Grid.Row="4">
                 <Grid.RowDefinitions>
@@ -42,10 +43,10 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Label Content="Номера телефонов"/>
-                <DataGrid Grid.Row="1" IsReadOnly="True" AutoGenerateColumns="False">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Phones}" IsReadOnly="True" AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Тип" Width="*"/>
-                        <DataGridTextColumn Header="Телефон" Width="*"/>
+                        <DataGridTextColumn Header="Тип" Width="*" Binding="{Binding Type}"/>
+                        <DataGridTextColumn Header="Телефон" Width="*" Binding="{Binding Number}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
@@ -55,14 +56,11 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Label Content="Список групп"/>
-                <ListBox Grid.Row="1">
-                    
-                </ListBox>
+                <ListBox Grid.Row="1" ItemsSource="{Binding Groups}"/>
             </Grid>
         </Grid>
-
         <Grid Grid.Column="1" Margin="3 0 0 0">
-            <Image/>
+            <Image Source="{Binding Image.Source}"/>
         </Grid>
     </Grid>
 </Window>

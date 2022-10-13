@@ -156,11 +156,11 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Content="Добавить фото" Height="30" Margin="0 4 2 0"/>
-                        <Button Content="Удалить фото" Grid.Column="1" Margin="2 4 0 0"/>
+                        <Button Content="Добавить фото" Height="30" Margin="0 4 2 0" Command="{Binding AddImageCommand}"/>
+                        <Button Content="Удалить фото" Grid.Column="1" Margin="2 4 0 0" Command="{Binding DeleteImageCommand}"/>
                     </Grid>
                 </DockPanel>
-                <Image/>
+                <Image Source="{Binding AbonentImage.Source }"/>
             </DockPanel>
         </Grid>
     </DockPanel>
