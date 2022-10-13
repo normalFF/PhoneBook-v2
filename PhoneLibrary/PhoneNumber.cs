@@ -33,7 +33,7 @@ namespace PhoneLibrary
 			return false;
 		}
 
-		public void ValidatePhoneModel(PhoneNumberModel phoneModel)
+		public static void ValidatePhoneModel(PhoneNumberModel phoneModel)
 		{
 			if (phoneModel == null) throw new ArgumentNullException($"{nameof(phoneModel)} не может быть равен {phoneModel}");
 			var context = new ValidationContext(phoneModel, serviceProvider: null, items: null);

@@ -13,7 +13,7 @@ namespace PhoneLibrary
 		public string Type { get; set; }
 
 		[Required(ErrorMessage = "Номер телефона не может быть пустым значением")]
-		[RegularExpression(@"(\+|\d|\()([\d\-\(\) ]|){9,}\d")]
+		[RegularExpression(@"(\+|\d|\()([\d\-\(\) ]|){9,}\d", ErrorMessage = "Номер телефона не соответствует допустимому формату")]
 		[CustomRange(4, 15, ErrorMessage = "Номер содержит недопустимое количество цифр")]
 		public string Number { get; set; }
 
