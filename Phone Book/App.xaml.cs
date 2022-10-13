@@ -24,6 +24,7 @@ namespace Phone_Book
 			services.AddSingleton<IDialog, ServiceDialogs>();
 			services.AddSingleton<MainViewModel>();
 			services.AddTransient<CreateAbonent>();
+			services.AddTransient<BrowseAbonent>();
 		}
 
 		protected override async void OnStartup(StartupEventArgs e)
