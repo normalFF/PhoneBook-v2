@@ -22,6 +22,8 @@
 
 		public void RemoveGroup(string groupName);
 
+		public void ValidatePhoneNumber(PhoneNumberModel phoneModel);
+
 		public bool IsSaved();
 
 		public void Clear();
