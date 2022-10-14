@@ -69,6 +69,7 @@ namespace Phone_Book.Models
 		public ICommand OpenAddGroupDialog { get; private set; }
 		public ICommand OpenEditGroupDialog { get; private set; }
 		public ICommand DeleteGroupCommand { get; private set; }
+		public ICommand DeleteAbonentCommand { get; private set; }
 		public ICommand LoadFileCommand { get; private set; }
 		public ICommand SaveFileCommand { get; private set; }
 		public ICommand SaveFileAsCommand { get; private set; }
@@ -143,13 +144,26 @@ namespace Phone_Book.Models
 		{
 			OpenAddAbonentDialog = new CommandBase(OnOpenAddAbonentDialog, (obj) => true);
 			OpenAddGroupDialog = new CommandBase(OnOpenAddGroupDialog, (obj) => true);
-			OpenEditAbonentDialog = new CommandBase(OnOpenEditAbonentDialog, (obj) => SelectAbonent != null);
+			OpenEditAbonentDialog = new CommandBase(OnOpenEditAbonentDialog, (obj) => GlobalSelectAbonent != null);
 			OpenAbonentInfoDialog = new CommandBase(OnOpenAbonentInfoDialog, (obj) => GlobalSelectAbonent != null);
 			DeleteGroupCommand = new CommandBase(OnDeleteGroup, (obj) => !string.IsNullOrEmpty(SelectGroup));
+			DeleteAbonentCommand = new CommandBase(OnDeleteAbonent, (obj) => GlobalSelectAbonent is not null);
 			OpenEditGroupDialog = new CommandBase(OnEditGroup, (obj) => !string.IsNullOrEmpty(GlobalSelectGroup) && Abonents.Where(i => i.Groups.Contains(GlobalSelectGroup)).Count() > 0);
 			LoadFileCommand = new CommandBase(OnLoadFile, (obj) => true);
 			SaveFileCommand = new CommandBase(OnSaveFile, (obj) => true);
 			SaveFileAsCommand = new CommandBase(OnSaveAsCommand, (obj) => true);
+		}
+
+		private void OnDeleteAbonent(object obj)
+		{
+			try
+			{
+				phoneBook.RemoveAbonent(GlobalSelectAbonent);
+			}
+			catch (Exception ex)
+			{
+				dialogService.ShowMessageException(ex.InnerException is null ? ex.Message : ex.InnerException.Message, "Ошибка");
+			}
 		}
 
 		private void OnEditGroup(object obj)

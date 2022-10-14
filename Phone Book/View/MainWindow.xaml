@@ -23,8 +23,8 @@
             <MenuItem Header="Файл">
                 <MenuItem Header="Создать"/>
                 <MenuItem Header="Открыть" Command="{Binding LoadFileCommand}"/>
-                <MenuItem Header="Сохранить"/>
-                <MenuItem Header="Сохранить как..."/>
+                <MenuItem Header="Сохранить" Command="{Binding SaveFileCommand}"/>
+                <MenuItem Header="Сохранить как..." Command="{Binding SaveFileAsCommand}"/>
             </MenuItem>
             <MenuItem Header="Добавить Абонента" Command="{Binding OpenAddAbonentDialog}"/>
             <MenuItem Header="Добавить Группу" Command="{Binding OpenAddGroupDialog}"/>
@@ -54,8 +54,7 @@
                                     <ContextMenu>
                                         <MenuItem Header="Просмотр данных" Command="{Binding OpenAbonentInfoDialog}"/>
                                         <MenuItem Header="Редактирование данных" Command="{Binding OpenEditAbonentDialog}"/>
-                                        <MenuItem Header="Копирование данных"/>
-                                        <MenuItem Header="Удаление Абонента"/>
+                                        <MenuItem Header="Удаление Абонента" Command="{Binding DeleteAbonentCommand}"/>
                                     </ContextMenu>
                                 </DataGrid.ContextMenu>
                                 <DataGrid.Columns>
@@ -123,10 +122,9 @@
                                 </DataGrid.ItemsSource>
                                 <DataGrid.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Просмотр данных"/>
-                                        <MenuItem Header="Редактирование данных"/>
-                                        <MenuItem Header="Копирование данных"/>
-                                        <MenuItem Header="Удаление Абонента"/>
+                                        <MenuItem Header="Просмотр данных" Command="{Binding OpenAbonentInfoDialog}"/>
+                                        <MenuItem Header="Редактирование данных" Command="{Binding OpenEditAbonentDialog}"/>
+                                        <MenuItem Header="Удаление Абонента" Command="{Binding DeleteAbonentCommand}"/>
                                     </ContextMenu>
                                 </DataGrid.ContextMenu>
                                 <DataGrid.Columns>
