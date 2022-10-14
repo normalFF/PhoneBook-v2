@@ -10,6 +10,8 @@ namespace Phone_Book.Models
 		public CreateAbonent CreateAbonentModel => App.Host.Services.GetRequiredService<CreateAbonent>();
 		public CreateGroup CreateGroupModel => App.Host.Services.GetRequiredService<CreateGroup>();
 		public BrowseAbonent BrowseAbonentModel => App.Host.Services.GetRequiredService<BrowseAbonent>();
+		public EditAbonent EditAbonentModel => App.Host.Services.GetRequiredService<EditAbonent>();
+		public EditGroup EditGroupModel => App.Host.Services.GetRequiredService<EditGroup>();
 		public IPhoneBook PhoneBook => App.Host.Services.GetRequiredService<IPhoneBook>();
 		public IDialog SystemDialogWindows => App.Host.Services.GetRequiredService<IDialog>();
 	}

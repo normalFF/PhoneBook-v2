@@ -25,6 +25,9 @@ namespace Phone_Book
 			services.AddSingleton<MainViewModel>();
 			services.AddTransient<CreateAbonent>();
 			services.AddTransient<BrowseAbonent>();
+			services.AddTransient<EditAbonent>();
+			services.AddTransient<CreateGroup>();
+			services.AddTransient<EditGroup>();
 		}
 
 		protected override async void OnStartup(StartupEventArgs e)
