@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace PhoneLibrary
 {
 	[Serializable]
-	public class AbonentModel
+	public class AbonentModel : ICloneable
 	{
 		[Required(ErrorMessage = "Имя абонента не может быть пустым значением")]
 		[StringLength(20, MinimumLength = 2, ErrorMessage = "Длина имени не менее 2-х и не более 20 символов")]
@@ -30,5 +30,20 @@ namespace PhoneLibrary
 		public string[] Groups { get; set; }
 
 		public int? Id { get; internal set; }
+
+		public object Clone()
+		{
+			return new AbonentModel()
+			{
+				Name = Name,
+				Surname = Surname,
+				DateOfBirth = DateOfBirth,
+				Residence = Residence,
+				ImageBase64 = ImageBase64,
+				Phones = Phones.Select(i => (PhoneNumberModel)i.Clone()).ToArray(),
+				Groups = (string[])Groups.Clone(),
+				Id = Id
+			};
+		}
 	}
 }
