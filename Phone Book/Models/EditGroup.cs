@@ -44,7 +44,7 @@ namespace Phone_Book.Models
 				else
 				{
 					AbonentModel[] newAbonents = SelectAbonents.Where(i => !savedSelectedAbonents.Select(j => j.Id).Contains(i.Id)).ToArray();
-					AbonentModel[] deleteAbonents = savedSelectedAbonents.Where(i => !SelectAbonents.Select(j => j.Id).Contains(i.Id)).ToArray();
+					AbonentModel[] deleteAbonents = PhoneBookAbonents.Where(i => savedSelectedAbonents.Select(j => j.Id).Contains(i.Id) && i.Groups.Contains(GroupName)).ToArray();
 
 					try
 					{
