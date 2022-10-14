@@ -11,9 +11,6 @@
 
     <Window.Resources>
         <converter:IEnumerableFilterConverter x:Key="AbonentConverter"/>
-        <converter:IEnumerableGroupConverter x:Key="GroupConverter"/>
-        <converter:PhoneNumberConverter x:Key="NumberConverter"/>
-        <converter:EnumerableToListConverter x:Key="AbonentToList"/>
     </Window.Resources>
 
     <DockPanel Margin="5">
