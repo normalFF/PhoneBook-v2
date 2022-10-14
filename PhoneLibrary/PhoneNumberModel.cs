@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace PhoneLibrary
 {
 	[Serializable]
-	public class PhoneNumberModel
+	public class PhoneNumberModel : ICloneable
 	{
 		private string _numbers = "0123456789";
 
@@ -16,6 +16,15 @@ namespace PhoneLibrary
 		[RegularExpression(@"(\+|\d|\()([\d\-\(\) ]|){9,}\d", ErrorMessage = "Номер телефона не соответствует допустимому формату")]
 		[CustomRange(4, 15, ErrorMessage = "Номер содержит недопустимое количество цифр")]
 		public string Number { get; set; }
+
+		public object Clone()
+		{
+			return new PhoneNumberModel()
+			{
+				Type = Type,
+				Number = Number
+			};
+		}
 
 		public override bool Equals(object? obj)
 		{
