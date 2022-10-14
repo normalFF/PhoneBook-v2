@@ -7,13 +7,10 @@
         xmlns:converter="clr-namespace:Phone_Book.Infrastructure.Converters"
         mc:Ignorable="d"
         DataContext="{Binding MainModel, Source={StaticResource Locator}}"
-        Title="Телефонная книга" MinHeight="600" Width="1300" local:WindowCloser.EnableWindowClosing="True">
+        Title="{Binding FileWay, StringFormat=Телефонная книга: {0}, TargetNullValue=Телефонная книга}" MinHeight="600" Width="1300" local:WindowCloser.EnableWindowClosing="True">
 
     <Window.Resources>
-        <converter:IEnumerableFilterConverter x:Key="AbonentConverter"/>
-        <converter:IEnumerableGroupConverter x:Key="GroupConverter"/>
-        <converter:PhoneNumberConverter x:Key="NumberConverter"/>
-        <converter:EnumerableToListConverter x:Key="AbonentToList"/>
+        <converter:IEnumerableAbonentConverter x:Key="AbonentConverter"/>
     </Window.Resources>
 
     <Grid>
@@ -47,7 +44,12 @@
                         </Grid.ColumnDefinitions>
 
                         <GroupBox Header="Список абонентов">
-                            <DataGrid Margin="0 5 5 0" SelectedItem="{Binding SelectAbonent}" ItemsSource="{Binding Abonents, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource AbonentToList}}" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True">
+                            <DataGrid Margin="0 5 5 0" SelectedItem="{Binding SelectAbonent}" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True">
+                                <DataGrid.ItemsSource>
+                                    <MultiBinding Converter="{StaticResource AbonentConverter}">
+                                        <Binding Path="Abonents"/>
+                                    </MultiBinding>
+                                </DataGrid.ItemsSource>
                                 <DataGrid.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Просмотр данных" Command="{Binding OpenAbonentInfoDialog}"/>
@@ -90,7 +92,19 @@
                                 <Label Margin="0 4 0 4" Content="{StaticResource SearchIcon}"/>
                                 <TextBox FontSize="16" Margin="0 4 0 4"/>
                             </DockPanel>
-                            <ListBox ItemsSource="{Binding Groups, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ListBox SelectedItem="{Binding SelectGroup}">
+                                <ListBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Редактирование группы" Command="{Binding OpenEditGroupDialog}"/>
+                                        <MenuItem Header="Удаление Группы" Command="{Binding DeleteGroupCommand}"/>
+                                    </ContextMenu>
+                                </ListBox.ContextMenu>
+                                <ListBox.ItemsSource>
+                                    <MultiBinding Converter="{StaticResource AbonentConverter}">
+                                        <Binding Path="Groups"/>
+                                    </MultiBinding>
+                                </ListBox.ItemsSource>
+                            </ListBox>
                         </DockPanel>
                     </GroupBox>
 
