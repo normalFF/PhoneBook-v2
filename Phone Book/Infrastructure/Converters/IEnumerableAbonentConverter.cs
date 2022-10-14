@@ -15,23 +15,36 @@ namespace Phone_Book.Infrastructure.Converters
 		{
 			if (values.Length == 1)
 			{
-				var collection = values[0] as IEnumerable<AbonentModel>;
+				var collection = values[0] as ICollection<AbonentModel>;
 				return collection.ToList();
 			}
 			if (values.Length == 2)
 			{
-				try
+				if (values[1] is string groupName)
 				{
-					var collection = values[0] as IEnumerable<AbonentModel>;
-					var param = values[1] as string;
+					try
+					{
+						var collection = values[0] as ICollection<AbonentModel>;
+						return collection.Where(i => i.Groups.Contains(groupName));
+					}
+					catch (Exception)
+					{
+						return null;
+					}
+				}
+				else if (values[1] is ICollection<AbonentModel> abonents)
+				{
+					try
+					{
+						var collection = values[0] as ICollection<AbonentModel>;
+						return collection.Where(i => !abonents.Select(j => j.Id).Contains(i.Id)).ToList();
+					}
+					catch (Exception)
+					{
+						return null;
+					}
+				}
 
-					if (string.IsNullOrEmpty(param)) return collection.ToList();
-					else return collection.Where(t => t.Groups.Contains(param)).ToList();
-				}
-				catch (Exception)
-				{
-					return null;
-				}
 			}
 			return null;
 		}
