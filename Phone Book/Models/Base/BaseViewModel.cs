@@ -22,5 +22,6 @@ namespace Phone_Book.Models.Base
 		}
 
 		public static AbonentModel GlobalSelectAbonent { get; set; }
+		public static string GlobalSelectGroup { get; set; }
 	}
 }
