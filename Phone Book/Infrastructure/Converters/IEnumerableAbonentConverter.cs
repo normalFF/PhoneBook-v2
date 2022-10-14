@@ -15,8 +15,15 @@ namespace Phone_Book.Infrastructure.Converters
 		{
 			if (values.Length == 1)
 			{
-				var collection = values[0] as ICollection<AbonentModel>;
-				return collection.ToList();
+				if (values[0] is ICollection<AbonentModel> collectionAbonents)
+				{
+					return collectionAbonents.ToList();
+				}
+				if (values[0] is ICollection<string> collectionString)
+				{
+					return collectionString.ToList();
+				}
+				return null;
 			}
 			if (values.Length == 2)
 			{
@@ -52,11 +59,6 @@ namespace Phone_Book.Infrastructure.Converters
 		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
 		{
 			throw new NotImplementedException();
-		}
-
-		private List<T> Filter<T>(IEnumerable<T> mainList, IEnumerable<T> filterList)
-		{
-			return mainList.Where(i => !filterList.Contains(i)).ToList();
 		}
 	}
 }
