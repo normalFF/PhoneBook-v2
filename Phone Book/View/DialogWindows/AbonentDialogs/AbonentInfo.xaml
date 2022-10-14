@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         DataContext="{Binding BrowseAbonentModel, Source={StaticResource Locator}}"
-        Title="AbonentInfo" Height="450" Width="800" ResizeMode="NoResize">
+        Title="AbonentInfo" Height="550" Width="1000" ResizeMode="NoResize">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -23,19 +23,19 @@
             </Grid.RowDefinitions>
             <StackPanel>
                 <Label Content="Имя"/>
-                <TextBox IsReadOnly="True" Text="{Binding Name}"/>
+                <TextBox Height="24" Padding="2" IsReadOnly="True" Text="{Binding Name}"/>
             </StackPanel>
             <StackPanel Grid.Row="1">
                 <Label Content="Фамилия"/>
-                <TextBox IsReadOnly="True" Text="{Binding Surname}"/>
+                <TextBox Height="24" Padding="2" IsReadOnly="True" Text="{Binding Surname}"/>
             </StackPanel>
             <StackPanel Grid.Row="2">
                 <Label Content="Дата рождения"/>
-                <TextBox IsReadOnly="True" Text="{Binding DateOfBirth}"/>
+                <TextBox Height="24" Padding="2" IsReadOnly="True" Text="{Binding DateOfBirth, StringFormat=dd.MM.yyyy}"/>
             </StackPanel>
             <StackPanel Grid.Row="3">
                 <Label Content="Место проживания"/>
-                <TextBox IsReadOnly="True" Text="{Binding Residence}"/>
+                <TextBox Height="24" Padding="2" IsReadOnly="True" Text="{Binding Residence}"/>
             </StackPanel>
             <Grid Grid.Row="4">
                 <Grid.RowDefinitions>

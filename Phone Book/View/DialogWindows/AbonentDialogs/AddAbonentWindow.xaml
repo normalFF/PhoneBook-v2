@@ -79,7 +79,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
                         <StackPanel Grid.Column="1" Margin="4 0 0 0">
-                            <Button Content="Удалить" Height="25"  Command="{Binding DeletePhoneCommand}"/>
+                            <Button Content="Удалить" Height="25" Command="{Binding DeletePhoneCommand}"/>
                         </StackPanel>
                     </Grid>
                     <Grid Grid.Row="2" Margin="0 4 0 0">
