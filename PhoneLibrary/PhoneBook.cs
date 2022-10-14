@@ -1,86 +1,105 @@
-﻿using PhoneLibrary.IdGenerators;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Text.Encodings;
+﻿using System.Collections.ObjectModel;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace PhoneLibrary
 {
 	public class PhoneBook : IPhoneBook
 	{
 		private static readonly string[] _baseGroups = new string[] { "Семья", "Работа", "Друзья", "Общие" };
-		private static readonly string[] _basePhoneTypse = new string[] { "Домашний", "Рабочий", "Мобильный" };
+		private static readonly string[] _basePhoneType = new string[] { "Домашний", "Рабочий", "Мобильный" };
+		private int _id;
+		private IReadOnlyCollection<string> groupCollection;
+		public IReadOnlyCollection<string> phoneTypeCollection;
 
-		private readonly IGenerateId _generate;
-		private readonly List<string> _group;
-		private readonly List<string> _phoneType;
-		private readonly List<Abonent> _abonentsList;
-		private bool _isSaved;
+		internal List<string> Group { get; set; }
+		internal List<string> PhoneType { get; set; }
+		internal List<Abonent> AbonentsList { get; set; }
+		internal bool IsSaved { get; private set; }
 
 		public PhoneBook()
 		{
-			_group = new List<string>() { "Семья", "Работа", "Друзья", "Общие" };
-			_phoneType = new List<string>() { "Домашний", "Рабочий", "Мобильный" };
-			_abonentsList = new();
-			_isSaved = true;
-			_generate = new MyGenerateId(this);
+			Group = _baseGroups.ToList();
+			PhoneType = _basePhoneType.ToList();
+			AbonentsList = new();
+
+			groupCollection = new ReadOnlyCollection<string>(Group);
+			phoneTypeCollection = new ReadOnlyCollection<string>(PhoneType);
+			IsSaved = true;
+
+			_id = 0;
+		}
+
+		public IReadOnlyCollection<string> GetPhoneTypes() => phoneTypeCollection;
+
+		public IReadOnlyCollection<string> GetGroupsName() => groupCollection;
+
+		public IReadOnlyCollection<AbonentModel> GetAbonents() => new ReadOnlyCollection<AbonentModel>(AbonentsList.Select(i => i.GetModel()).ToList());
+
+		private void Initialize(List<AbonentModel> abonentModels)
+		{
+			List<string> groups = new();
+			List<string> types = new();
+			List<Abonent> abonents = new();
+
+			foreach (AbonentModel modelItem in abonentModels)
+			{
+				List<string> itemGroups = modelItem.Groups.Where(i => !string.IsNullOrEmpty(i)).Where(i => !groups.Contains(i)).ToList();
+				List<string> itemTypes = modelItem.Phones.Select(i => i.Type).Where(i => !string.IsNullOrEmpty(i)).Where(i => !types.Contains(i)).ToList();
+				if (itemGroups is not null) groups.AddRange(itemGroups);
+				if (itemTypes is not null) types.AddRange(itemTypes);
+
+				modelItem.Id = _id;
+				_id = _id + 1;
+				abonents.Add(new Abonent(modelItem));
+			}
+
+			Group.AddRange(groups);
+			PhoneType.AddRange(types);
+			AbonentsList.AddRange(abonents);
+			IsSaved = true;
 		}
 
 		public void AddAbonent(AbonentModel abonentModel)
 		{
 			if (abonentModel.Id is not null) throw new InvalidOperationException("Объект уже содержится в телефонной книге");
 
-			abonentModel.Id = _generate.GetId();
+			abonentModel.Id = _id;
 			Abonent abonent = new Abonent(abonentModel);
-			_abonentsList.Add(abonent);
-			var newTypes = abonentModel.Phones.Where(i => !_phoneType.Contains(i.Type)).Select(i => i.Type).ToArray();
-			if (newTypes.Length != 0) _phoneType.AddRange(newTypes);
-			_isSaved = false;
+
+			List<string> itemGroups = abonentModel.Groups.Where(i => !string.IsNullOrEmpty(i)).Where(i => !Group.Contains(i)).ToList();
+			List<string> itemTypes = abonentModel.Phones.Select(i => i.Type).Where(i => !string.IsNullOrEmpty(i)).Where(i => !PhoneType.Contains(i)).ToList();
+			if (itemGroups is not null) Group.AddRange(itemGroups);
+			if (itemTypes is not null) PhoneType.AddRange(itemTypes);
+			AbonentsList.Add(abonent);
+
+			_id = _id + 1;
+			IsSaved = false;
 		}
 
 		public void UpdateAbonent(AbonentModel abonentModel)
 		{
 			if (abonentModel.Id is null) throw new InvalidOperationException("Объект отсутствует в телефонной книге");
 
-			for (int i = 0; i < _abonentsList.Count; i++)
+			Abonent abonent = new Abonent(abonentModel);
+			for (int i = 0; i < AbonentsList.Count; i++)
 			{
-				if (abonentModel.Id == _abonentsList[i].Id) _abonentsList[i] = new(abonentModel);
+				if (abonent.Id == AbonentsList[i].Id) AbonentsList[i] = abonent;
 			}
-		}
 
-		public void AddPhoneAbonent(int id, PhoneNumberModel phone)
-		{
-			Abonent abonent = _abonentsList.Where(i => i.Id == id).First();
-			if (phone is null) throw new ArgumentNullException("Не указан номер телефона");
-			if (abonent is null) throw new ArgumentNullException($"Абонента с идентификатором {id} не существует");
+			List<string> groups = new();
+			List<string> phones = new();
 
-			abonent.AddPhones(phone);
-			_isSaved = false;
-		}
-
-		public IEnumerable<AbonentModel> GetAbonents()
-		{
-			return _abonentsList.Select(item => item.GetModel());
-		}
-
-		public IEnumerable<string> GetGroupsName()
-		{
-			return (IEnumerable<string>)_group.ToArray().Clone();
-		}
-
-		public IEnumerable<string> GetPhoneTypes()
-		{
-			return (IEnumerable<string>)_phoneType.ToArray().Clone();
-		}
-
-		public void RemoveGroup(string groupName)
-		{
-			if (_group.Contains(groupName))
+			foreach (Abonent abonentItem in AbonentsList)
 			{
-				foreach (Abonent item in _abonentsList) item.RemoveGroup(groupName);
-				_group.Remove(groupName);
+				if (abonentItem.Groups is not null) groups.AddRange(abonentItem.Groups.Where(i => !groups.Contains(i)));
+				phones.AddRange(abonentItem.PhoneNumbers.Select(i => i.Type).Where(i => !phones.Contains(i)));
 			}
+
+			phones = PhoneType.Where(i => !phones.Contains(i)).ToList();
+			groups = Group.Where(i => !groups.Contains(i)).ToList();
+			foreach (string item in phones) PhoneType.Remove(item);
+			foreach (string item in groups) Group.Remove(item);
+			IsSaved = false;
 		}
 
 		public void RemoveAbonent(AbonentModel abonent)
@@ -88,8 +107,23 @@ namespace PhoneLibrary
 			if (abonent is null) throw new ArgumentNullException($"Ошибка операции. Значение параметра {abonent}");
 			if (abonent.Id is null) throw new ArgumentNullException($"Ошибка операции. Элемент отсутствует в телефонной книге");
 
-			Abonent selectAbonent = _abonentsList.Where(i => i.Equals(abonent)).First();
-			_abonentsList.Remove(selectAbonent);
+			Abonent selectAbonent = AbonentsList.Where(i => i.Id == abonent.Id).First();
+			AbonentsList.Remove(selectAbonent);
+
+			List<string> groups = new();
+			List<string> phones = new();
+
+			foreach (Abonent abonentItem in AbonentsList)
+			{
+				if (abonentItem.Groups is not null) groups.AddRange(abonentItem.Groups.Where(i => !groups.Contains(i)));
+				phones.AddRange(abonentItem.PhoneNumbers.Select(i => i.Type).Where(i => !phones.Contains(i)));
+			}
+
+			phones = phones.Where(i => !PhoneType.Contains(i)).ToList();
+			groups = groups.Where(i => !Group.Contains(i)).ToList();
+			foreach (string item in phones) PhoneType.Remove(item);
+			foreach (string item in groups) Group.Remove(item);
+			IsSaved = false;
 		}
 
 		public void AddGroup(string groupName, AbonentModel[] arrayAbonents)
@@ -102,13 +136,39 @@ namespace PhoneLibrary
 				if (item is null) throw new NullReferenceException($"Ошибка операции. Коллекция содержит элемент, имеющий значение {item}");
 				if (item.Id is null) throw new NullReferenceException($"Ошибка операции. Коллекция содержит элемент, которого нет в телефонной книге");
 			}
-			foreach (AbonentModel item in arrayAbonents)
-				_abonentsList.Where(i => i.Id == item.Id).First()?.AddGroup(groupName);
+
+			if (!Group.Contains(groupName)) Group.Add(groupName);
+			int[] arrayId = arrayAbonents.Select(i => (int)i.Id).ToArray();
+
+			foreach (Abonent abonent in AbonentsList)
+			{
+				if (arrayId.Contains(abonent.Id))
+				{
+					abonent.AddGroup(groupName);
+				}
+			}
+			IsSaved = false;
 		}
 
-		public bool IsSaved()
+		public void RemoveGroup(string groupName, AbonentModel[] abonents)
 		{
-			return _isSaved;
+			var arrayId = abonents.Select(i => (int)i.Id).ToList();
+			foreach (Abonent abonent in AbonentsList)
+			{
+				if (arrayId.Contains(abonent.Id)) abonent.RemoveGroup(groupName);
+			}
+			if (AbonentsList.Where(i => i.Groups.Contains(groupName)).Count() == 0) Group.Remove(groupName);
+			IsSaved = false;
+		}
+
+		public void RemoveGroup(string groupName)
+		{
+			if (Group.Contains(groupName))
+			{
+				foreach (Abonent item in AbonentsList) item.RemoveGroup(groupName);
+				Group.Remove(groupName);
+			}
+			IsSaved = false;
 		}
 
 		public void Save(string filePath)
@@ -116,55 +176,34 @@ namespace PhoneLibrary
 			var serializedCollection = GetAbonents();
 			foreach (AbonentModel item in serializedCollection) item.Id = null;
 
-			var result = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(serializedCollection, new JsonSerializerOptions() { WriteIndented = true } ));
-			using (FileStream str = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write))
+			File.WriteAllText(filePath, string.Empty);
+			using (FileStream fs = new FileStream(filePath, FileMode.Create))
 			{
-				str.Write(result);
+				JsonSerializer.Serialize(fs, AbonentsList.Select(i => i.GetModel()).ToList());
 			}
-			_isSaved = true;
+			IsSaved = true;
 		}
 
 		public void Load(string filePath)
 		{
-			if (File.Exists(filePath))
+			Clear();
+
+			List<AbonentModel>? abonents;
+			using (FileStream fs = new FileStream(filePath, FileMode.Open))
 			{
-				var serializedString = string.Empty;
-
-				using (FileStream streamRead = File.OpenRead(filePath))
-				{
-					byte[] bytes = new byte[streamRead.Length];
-					streamRead.Read(bytes, 0, bytes.Length);
-					serializedString = Encoding.UTF8.GetString(bytes);
-				}
-
-				IEnumerable<AbonentModel> resultDeserialize = JsonSerializer.Deserialize<IEnumerable<AbonentModel>>(serializedString);
-				if (resultDeserialize is null) throw new SerializationException();
-
-				Clear();
-				try
-				{
-					foreach (AbonentModel item in resultDeserialize)
-					{
-						AddAbonent(item);
-					}
-					_isSaved = true;
-				}
-				catch (Exception ex)
-				{
-					_abonentsList.Clear();
-					_isSaved = true;
-					throw new Exception(ex.InnerException is null ? ex.Message : ex.InnerException.Message);
-				}
+				abonents = JsonSerializer.Deserialize<List<AbonentModel>>(fs);
 			}
+
+			if (abonents is null) return;
 			else
 			{
-				throw new FileNotFoundException();
+				Initialize(abonents);
 			}
 		}
 
 		public bool CheckAbonentByProperties(AbonentModel abonent)
 		{
-			foreach (Abonent item in _abonentsList)
+			foreach (Abonent item in AbonentsList)
 			{
 				if (item.Equals(abonent)) return true;
 			}
@@ -173,16 +212,20 @@ namespace PhoneLibrary
 
 		public void Clear()
 		{
-			_abonentsList.Clear();
-			_group.Clear();
-			_group.AddRange(_baseGroups);
-			_phoneType.Clear();
-			_phoneType.AddRange(_basePhoneTypse);
+			AbonentsList.Clear();
+			Group.Clear();
+			PhoneType.Clear();
+			_id = 0;
 		}
 
 		public void ValidatePhoneNumber(PhoneNumberModel phoneModel)
 		{
 			PhoneNumber.ValidatePhoneModel(phoneModel);
+		}
+
+		bool IPhoneBook.IsSaved()
+		{
+			return IsSaved;
 		}
 	}
 }
