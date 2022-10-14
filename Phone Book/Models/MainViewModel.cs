@@ -71,14 +71,14 @@ namespace Phone_Book.Models
 
 		private IDialogService dialogService;
 		private IPhoneBook phoneBook;
-		private IEnumerable<AbonentModel> abonents;
-		private IEnumerable<string> groups;
+		private IReadOnlyCollection<AbonentModel> abonents;
+		private IReadOnlyCollection<string> groups;
 		private AbonentModel selectAbonent;
 		private AbonentModel selectAbonentInGroup;
 		private string selectGroup;
 		private string fileWay;
 
-		public IEnumerable<AbonentModel> Abonents
+		public IReadOnlyCollection<AbonentModel> Abonents
 		{
 			get => abonents;
 			set 
@@ -103,7 +103,7 @@ namespace Phone_Book.Models
 				if (Set(ref selectAbonentInGroup, value)) GlobalSelectAbonent = value;
 			}
 		}
-		public IEnumerable<string> Groups
+		public IReadOnlyCollection<string> Groups
 		{
 			get => groups;
 			set
@@ -148,12 +148,15 @@ namespace Phone_Book.Models
 		{
 			bool result = false;
 			dialogService.ShowDialog(EnumDialogsWindowsFromGroup.AddGroup, (value) => result = value);
+			Abonents = phoneBook.GetAbonents();
 		}
 
 		private void OnOpenEditAbonentDialog(object obj)
 		{
 			bool result = false;
 			dialogService.ShowDialog(EnumDialogsWindowsFromAbonent.EditAbonent, (value) => result = value);
+			Abonents = phoneBook.GetAbonents();
+			Groups = phoneBook.GetGroupsName();
 		}
 
 		private void OnOpenAbonentInfoDialog(object obj)
