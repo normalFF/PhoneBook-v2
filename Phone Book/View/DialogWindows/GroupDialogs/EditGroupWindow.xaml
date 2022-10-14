@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Phone_Book.Infrastructure.WindowClose"
         mc:Ignorable="d"
         DataContext="{Binding EditGroupModel, Source={StaticResource Locator}}"
-        Title="" Height="450" Width="1000" ResizeMode="NoResize" local:WindowCloser.EnableWindowClosing="True">
+        Title="{Binding GroupName}" Height="450" Width="1000" ResizeMode="NoResize" local:WindowCloser.EnableWindowClosing="True">
 
     <Window.Resources>
         <converter:IEnumerableAbonentConverter x:Key="AbonentConverter"/>
@@ -20,8 +20,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Content="Сохранить" Height="30" Margin="4 4 2 4"/>
-                <Button Grid.Column="1" Content="Отмена" Margin="2 4 4 4"/>
+                <Button Content="Сохранить" Height="30" Margin="4 4 2 4" Command="{Binding AddGroupInPhoneBookCommand}"/>
+                <Button Grid.Column="1" Content="Отмена" Margin="2 4 4 4" Command="{Binding CloseCommand}"/>
             </Grid>
         </DockPanel>
         <Grid>
@@ -99,8 +99,8 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="1" Margin="4 0 4 0">
-                            <Button Content="{Binding Source={StaticResource IconArrowLeft}}" Width="50" Margin="0 0 0 4"/>
-                            <Button Content="{Binding Source={StaticResource IconArrowRight}}"/>
+                            <Button Content="{Binding Source={StaticResource IconArrowLeft}}" Width="50" Margin="0 0 0 4" Command="{Binding AddAbonentInGroup}"/>
+                            <Button Content="{Binding Source={StaticResource IconArrowRight}}" Command="{Binding DeleteAbonentInGroup}"/>
                         </StackPanel>
                     </Grid>
                 </Grid>
