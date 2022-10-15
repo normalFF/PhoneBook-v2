@@ -33,10 +33,6 @@
         <TabControl Grid.Row="1">
             <TabItem Header="Список Абонентов">
                 <DockPanel>
-                    <DockPanel DockPanel.Dock="Top">
-                        <Label Content="{StaticResource SearchIcon}"/>
-                        <TextBox FontSize="16"/>
-                    </DockPanel>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="4*"/>
@@ -87,10 +83,6 @@
 
                     <GroupBox Header="Список групп">
                         <DockPanel Grid.Column="0">
-                            <DockPanel DockPanel.Dock="Top">
-                                <Label Margin="0 4 0 4" Content="{StaticResource SearchIcon}"/>
-                                <TextBox FontSize="16" Margin="0 4 0 4"/>
-                            </DockPanel>
                             <ListBox SelectedItem="{Binding SelectGroup}">
                                 <ListBox.ContextMenu>
                                     <ContextMenu>
@@ -109,10 +101,6 @@
 
                     <GroupBox Grid.Column="1" Header="Список абонетов группы">
                         <DockPanel>
-                            <DockPanel DockPanel.Dock="Top">
-                                <Label Content="{StaticResource SearchIcon}"/>
-                                <TextBox FontSize="16"/>
-                            </DockPanel>
                             <DataGrid Margin="0 5 0 0" AutoGenerateColumns="False" IsReadOnly="True" >
                                 <DataGrid.ItemsSource>
                                     <MultiBinding Converter="{StaticResource AbonentConverter}">

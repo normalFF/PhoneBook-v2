@@ -39,10 +39,6 @@
                         </Grid.RowDefinitions>
                         <Label Content="Состоят в группе"/>
                         <DockPanel Grid.Row="1">
-                            <DockPanel DockPanel.Dock="Top">
-                                <Label Content="{StaticResource SearchIcon}"/>
-                                <TextBox Height="24" Padding="2"/>
-                            </DockPanel>
                             <DataGrid Margin="0 4 0 0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding SelectAbonents}" SelectedItem="{Binding SelectAbonentInSelectedAbonents}">
                                 <DataGrid.ContextMenu>
                                     <ContextMenu>
@@ -66,10 +62,6 @@
                         </Grid.RowDefinitions>
                         <Label Content="Не состоят в группе"/>
                         <DockPanel Grid.Row="1">
-                            <DockPanel DockPanel.Dock="Top">
-                                <Label Content="{StaticResource SearchIcon}"/>
-                                <TextBox Height="24" Padding="2"/>
-                            </DockPanel>
                             <DataGrid Margin="0 4 0 0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" SelectedItem="{Binding SelectAbonentInPhoneBook}">
                                 <DataGrid.ContextMenu>
                                     <ContextMenu>

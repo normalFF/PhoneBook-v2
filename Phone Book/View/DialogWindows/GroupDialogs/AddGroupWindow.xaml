@@ -41,10 +41,6 @@
                 </Grid.ColumnDefinitions>
                 <GroupBox Header="Абоненты группы">
                     <DockPanel>
-                        <DockPanel DockPanel.Dock="Top">
-                            <Label Content="{StaticResource SearchIcon}"/>
-                            <TextBox Height="24" Padding="2"/>
-                        </DockPanel>
                         <DataGrid Margin="0 4 0 0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding SelectAbonents}" SelectedItem="{Binding SelectAbonentInSelectedAbonents}">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
@@ -75,10 +71,6 @@
                 </Grid>
                 <GroupBox Grid.Column="2" Header="Все абоненты">
                     <DockPanel>
-                        <DockPanel DockPanel.Dock="Top">
-                            <Label Content="{StaticResource SearchIcon}"/>
-                            <TextBox Height="24" Padding="2"/>
-                        </DockPanel>
                         <DataGrid Margin="0 4 0 0" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" SelectedItem="{Binding SelectAbonentInPhoneBook}">
                             <DataGrid.ContextMenu>
                                 <ContextMenu>
